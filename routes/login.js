@@ -36,11 +36,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-//delete user dev use
-router.delete("/", async (req, res) => {
-  console.log(req.session)
-// const response = await UserLogin.deleteMany({});
-  res.send(req.session);
-});
+
 
 module.exports = router;
