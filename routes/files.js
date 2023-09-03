@@ -2,6 +2,7 @@ const router = require("express").Router();
 const aws = require('aws-sdk')
 const multer = require('multer')
 const multerS3 = require('multer-s3');
+const auth = require("../middlewares/middleware");
 require("dotenv").config();
 
 
@@ -24,19 +25,19 @@ const upload = multer({
   })
 })
 
-router.post('/upload', upload.any('myfile'), async function (req, res, next) {
+router.post('/upload',auth, upload.any('myfile'), async function (req, res, next) {
   const uuid = req.header("uuid");
   let r = await s3.listObjectsV2({ Bucket: BUCKET, Prefix: `${uuid}/` }).promise();
   res.send(r.Contents)
 })
 
-router.get("/list", async (req, res) => {
+router.get("/list",auth, async (req, res) => {
   const uuid = req.header("uuid");
   let r = await s3.listObjectsV2({ Bucket: BUCKET, Prefix: `${uuid}/` }).promise();
   res.send(r.Contents)
 })
 
-router.get("/download/:filename", (req, res) => {
+router.get("/download/:filename",auth, (req, res) => {
   const uuid = req.header("uuid");
   const s3 = new aws.S3();
   const params = {
@@ -48,7 +49,7 @@ router.get("/download/:filename", (req, res) => {
   res.send({ signed_url: signedUrl });
 })
 
-router.delete("/delete/:filename", async (req, res) => {
+router.delete("/delete/:filename",auth, async (req, res) => {
   const uuid = req.header("uuid");
   await s3.deleteObject({ Bucket: BUCKET, Key: `${uuid}/${req.params.filename}` }).promise();
   let r = await s3.listObjectsV2({ Bucket: BUCKET, Prefix: `${uuid}/` }).promise();
