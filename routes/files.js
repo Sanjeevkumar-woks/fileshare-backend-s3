@@ -43,18 +43,30 @@ router.get("/download/:filename",auth, (req, res) => {
   const params = {
     Bucket: BUCKET,
     Key: `${uuid}/${req.params.filename}`,
-    Expires: 1, // e.g., 3600 seconds (1 hour)
+    Expires: 1, // 1 sec
+  };
+  const signedUrl = s3.getSignedUrl('getObject', params);
+  res.send({ signed_url: signedUrl });
+})
+router.get("/share/:filename",(req,res)=>{
+  const uuid = req.header("uuid");
+  const s3 = new aws.S3();
+  const params = {
+    Bucket: BUCKET,
+    Key: `${uuid}/${req.params.filename}`,
+    Expires:3600, // 1 hour
   };
   const signedUrl = s3.getSignedUrl('getObject', params);
   res.send({ signed_url: signedUrl });
 })
 
-router.delete("/delete/:filename",auth, async (req, res) => {
+router.delete("/delete/:filename", async (req, res) => {
   const uuid = req.header("uuid");
   await s3.deleteObject({ Bucket: BUCKET, Key: `${uuid}/${req.params.filename}` }).promise();
   let r = await s3.listObjectsV2({ Bucket: BUCKET, Prefix: `${uuid}/` }).promise();
   res.send(r.Contents);
 })
+
 
 
 module.exports = router;
