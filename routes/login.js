@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
       const storedToken = isUserExist.jwt_token;
       jwt.verify(storedToken, process.env.JWT_SECRATE);
       if (email_verified)
-       res.send({ email, email_verified, name, picture, "jwt_token": storedToken,uuid:isUserExist.uuid});
+        res.send({ email, email_verified, name, picture, "jwt_token": storedToken, uuid: isUserExist.uuid });
     } catch (err) {
       res.send({ error: err.message });
     }
@@ -29,13 +29,16 @@ router.post("/", async (req, res) => {
     });
     await user.save();
     const userCredentials = await UserLogin.findOne({ email });
-      res.send(userCredentials);
-  
+    res.send(userCredentials);
+
   } else {
     res.send({ error: "login failed!!" });
   }
 });
 
-
+router.delete("/", async (req, res) => {
+  const respo = await UserLogin.deleteMany({});
+  res.send(respo);
+})
 
 module.exports = router;
