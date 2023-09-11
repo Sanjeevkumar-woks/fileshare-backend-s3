@@ -18,6 +18,7 @@ async function sendMail({ from, to, subject, text, html }) {
     let info = await transpoter.sendMail({
         from, to, subject, text, html
     })
+    console.log(info);
 }
 
 module.exports = sendMail;
