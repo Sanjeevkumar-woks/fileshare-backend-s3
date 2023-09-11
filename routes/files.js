@@ -70,7 +70,7 @@ router.get("/download/:filename", auth, (req, res) => {
 });
 
 //genrating digned url with 24hrs validity foe sharing file
-router.get("/share/:filename", (req, res) => {
+router.get("/share/:filename",auth, (req, res) => {
   const uuid = req.header("uuid");
   if (!uuid) {
     res.status(401).send({ error: "unauthorized acess" })
@@ -87,7 +87,7 @@ router.get("/share/:filename", (req, res) => {
 });
 
 //File send by email post route
-router.post("/send", (req, res) => {
+router.post("/send",auth, (req, res) => {
   const { sharedlink, emailTo, emailFrom } = req.body;
   if (!sharedlink || !emailTo || !emailFrom) {
     return res.status(422).send({ error: 'All fields are required' });
