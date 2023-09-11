@@ -9,9 +9,10 @@ const { v4: uuid4 } = require("uuid");
 router.post("/", async (req, res) => {
   const decoded = req.body
   const { email, email_verified, name, picture } = decoded;
+
   //check user existance
   const isUserExist = await UserLogin.findOne({ email });
-
+  //if user exists verfy stored jwt token and email varification and send token
   if (isUserExist) {
     try {
       const storedToken = isUserExist.jwt_token;
@@ -21,7 +22,9 @@ router.post("/", async (req, res) => {
     } catch (err) {
       res.send({ error: err.message });
     }
-  } else if (email_verified) {
+  }
+  //if new user logged in verify gmail and store credentials, genrate new folder and token
+  else if (email_verified) {
     // check user google varified 
     var jwt_token = jwt.sign({ email }, process.env.JWT_SECRATE);
     const user = new UserLogin({
@@ -32,10 +35,11 @@ router.post("/", async (req, res) => {
     res.send(userCredentials);
 
   } else {
-    res.send({ error: "login failed!!" });
+    res.status(401).send({ error: "login failed!!" });
   }
 });
 
+//for developer use only
 router.delete("/", async (req, res) => {
   const respo = await UserLogin.deleteMany({});
   res.send(respo);

@@ -1,3 +1,4 @@
+//Email template to be sent
 module.exports = ({ emailFrom, downloadLink, size, expires }) => {
     return `
         <!doctype html>
